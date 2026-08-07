@@ -33,11 +33,37 @@ cd minitela-linux-compat
 
 O instalador solicita `sudo` apenas para instalar dependências e arquivos de sistema.
 
+### Segurança SELinux
+
+O instalador exige SELinux ativo (`Enforcing` ou `Permissive`) e confere os
+contextos de `/etc`, `/usr`, `/usr/lib` e `/usr/share` antes e depois da
+instalação. Ele usa uma área de estágio controlada em `/var/tmp`, instala uma
+lista explícita de arquivos e não copia metadados, ACLs ou xattrs do `.deb`
+para diretórios do sistema.
+
+Se o instalador informar que já existem arquivos de uma instalação anterior,
+**não force a cópia**. Primeiro restaure/remova essa instalação por um processo
+auditado. Em caso de suspeita de corrupção de labels, consulte a issue #2.
+
 ## Desinstalação
 
 ```bash
 ./scripts/uninstall-fedora.sh
 ```
+
+A remoção exige o manifesto criado pelo instalador e recusa apagar arquivos
+não rastreados. Isso evita que uma desinstalação apague arquivos do Fedora ou
+de outra aplicação.
+
+## Validação dos scripts
+
+```bash
+./tests/test-installer-safety.sh
+```
+
+O teste estático impede o retorno de cópias arquivadas para `/etc` e `/usr` e
+verifica as barreiras básicas de SELinux. A validação completa deve ocorrer em
+uma VM/snapshot Fedora com SELinux `Enforcing`.
 
 ## Estado de compatibilidade
 
