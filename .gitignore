@@ -1,0 +1,6 @@
+*.deb
+*.rpm
+*.tar.xz
+*.tar.zst
+*.log
+.stage/

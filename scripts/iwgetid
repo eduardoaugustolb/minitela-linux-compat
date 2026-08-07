@@ -1,0 +1,8 @@
+#!/bin/sh
+# Fedora no longer ships wireless-tools. Minitela calls /usr/sbin/iwgetid -r.
+if [ "$1" = '-r' ]; then
+  nmcli -t -f active,ssid dev wifi 2>/dev/null |
+    awk -F: '$1 == "yes" { sub(/^yes:/, ""); print; exit }'
+  exit 0
+fi
+exit 1
