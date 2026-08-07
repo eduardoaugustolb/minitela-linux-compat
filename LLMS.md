@@ -32,6 +32,14 @@ Este documento define o procedimento obrigatório para qualquer agente que insta
 
    Não use apenas `/usr/share/minitela/minitela` como teste de interface: na primeira execução, o programa do fabricante pode ficar residente e manter a janela oculta.
 
+   Se o log registrar `dpkg-query: package not installed` ou o processo cair
+   antes de criar `/tmp/minitela_socket`, execute o reparo gerenciado e repita
+   o teste:
+
+   ```bash
+   sudo ./scripts/repair-fedora.sh
+   ```
+
 4. Confirme o básico:
 
    ```bash

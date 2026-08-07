@@ -33,6 +33,13 @@ cd minitela-linux-compat
 
 O instalador solicita `sudo` apenas para instalar dependências e arquivos de sistema.
 
+Se uma instalação gerenciada precisar da correção de compatibilidade do
+`dpkg-query`, aplique-a pelo reparo oficial antes de abrir o aplicativo:
+
+```bash
+sudo ./scripts/repair-fedora.sh
+```
+
 ### Segurança SELinux
 
 O instalador exige SELinux ativo (`Enforcing` ou `Permissive`) e confere os
@@ -91,7 +98,7 @@ uma VM/snapshot Fedora com SELinux `Enforcing`.
 
 | Ambiente | Estado | Observação |
 | --- | --- | --- |
-| Fedora GNOME (Wayland) | Testado | Executa através do XWayland; janela pode ser aberta pelo lançador. |
+| Fedora GNOME (Wayland) | Testado | Instalação segura, reparo do `dpkg-query` e abertura pelo lançador verificados com SELinux enforcing. |
 | Fedora KDE Plasma (Wayland) | Esperado | Depende de XWayland estar instalado e ativo. |
 | Fedora GNOME/KDE (X11) | Esperado | Usa o backend GTK X11 diretamente. |
 | Outras distros RPM | Planejado | A adaptação principal é portável; faltam instaladores específicos. |
