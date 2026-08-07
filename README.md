@@ -65,6 +65,18 @@ A remoção exige o manifesto criado pelo instalador e recusa apagar arquivos
 não rastreados. Isso evita que uma desinstalação apague arquivos do Fedora ou
 de outra aplicação.
 
+## Reparação de uma instalação gerenciada
+
+Para aplicar correções de compatibilidade a uma instalação criada por este
+projeto, use o fluxo oficial — não copie arquivos para `/usr/local` à mão:
+
+```bash
+sudo ./scripts/repair-fedora.sh
+```
+
+O reparo só altera arquivos registrados no manifesto da instalação e valida o
+resultado antes de concluir.
+
 ## Validação dos scripts
 
 ```bash

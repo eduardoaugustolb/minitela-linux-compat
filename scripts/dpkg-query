@@ -1,10 +1,21 @@
 #!/bin/sh
 # Minitela asks Debian's dpkg-query for its own version and crashes if no
-# version is returned. Fedora has no dpkg database for this locally extracted app.
-if [ "$1" = '--showformat=' ] && [ "$2" = '${Version}' ] && [ "$3" = '--show' ] && [ "$4" = 'minitela' ]; then
-  printf '%s\n' '1.0.20'
-  exit 0
-fi
+# version is returned. Its shell command uses --showformat='${Version}', which
+# POSIX shells pass as one argument; support the separated form as well.
+case "$1" in
+  '--showformat=${Version}')
+    if [ "$2" = '--show' ] && [ "$3" = 'minitela' ]; then
+      printf '%s\n' '1.0.20'
+      exit 0
+    fi
+    ;;
+  '--showformat=')
+    if [ "$2" = '${Version}' ] && [ "$3" = '--show' ] && [ "$4" = 'minitela' ]; then
+      printf '%s\n' '1.0.20'
+      exit 0
+    fi
+    ;;
+esac
 
 echo 'dpkg-query: package not installed' >&2
 exit 1
