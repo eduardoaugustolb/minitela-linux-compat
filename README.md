@@ -45,7 +45,7 @@ Se o instalador informar que já existem arquivos de uma instalação anterior,
 **não force a cópia**. Primeiro restaure/remova essa instalação por um processo
 auditado. Em caso de suspeita de corrupção de labels, consulte a issue #2.
 
-Para os três arquivos udev deixados pela instalação antiga deste projeto, use
+Para arquivos udev e fontes deixados pela instalação antiga deste projeto, use
 somente a migração verificada abaixo. Ela confere checksum contra o `.deb` e
 recusa remover arquivos pertencentes a um RPM ou que tenham sido modificados:
 

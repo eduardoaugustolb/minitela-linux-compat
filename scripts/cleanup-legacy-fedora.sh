@@ -37,6 +37,8 @@ declare -a legacy_paths=(
   /etc/udev/hwdb.d/72-keyboard.hwdb
   /etc/udev/rules.d/99-custom-input.rules
   /etc/udev/rules.d/99-ttyacm.rules
+  /usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf
+  /usr/share/fonts/Montserrat-VariableFont_wght.ttf
 )
 
 for destination in "${legacy_paths[@]}"; do
