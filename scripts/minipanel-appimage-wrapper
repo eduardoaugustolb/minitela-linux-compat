@@ -1,0 +1,15 @@
+#!/bin/sh
+# Run the vendor's embedded AppImage without a FUSE mount. On Fedora systems
+# where a FUSE mount is unavailable, AppImage's official extraction mode keeps
+# the GIF editor usable. The vendor AppImage remains unchanged beside this
+# wrapper.
+set -eu
+
+vendor_appimage=/usr/share/minitela/resources/MiniPanel-0.1.6.AppImage.vendor
+if [ ! -x "$vendor_appimage" ]; then
+  echo "Minitela GIF editor AppImage is missing: $vendor_appimage" >&2
+  exit 1
+fi
+
+export APPIMAGE_EXTRACT_AND_RUN=1
+exec "$vendor_appimage" "$@"

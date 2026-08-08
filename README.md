@@ -34,7 +34,8 @@ cd minitela-linux-compat
 O instalador solicita `sudo` apenas para instalar dependências e arquivos de sistema.
 
 Se uma instalação gerenciada precisar da correção de compatibilidade do
-`dpkg-query`, aplique-a pelo reparo oficial antes de abrir o aplicativo:
+`dpkg-query` ou do editor de GIF em sistemas onde o FUSE não permite montar
+AppImages, aplique-a pelo reparo oficial antes de abrir o aplicativo:
 
 ```bash
 sudo ./scripts/repair-fedora.sh
@@ -83,6 +84,11 @@ sudo ./scripts/repair-fedora.sh
 
 O reparo só altera arquivos registrados no manifesto da instalação e valida o
 resultado antes de concluir.
+
+O reparo também troca apenas o lançador do AppImage do editor de GIF por um
+wrapper gerenciado. O AppImage original é preservado dentro de
+`/usr/share/minitela/resources/` e executado com o modo oficial de extração,
+sem exigir montagem FUSE.
 
 ## Validação dos scripts
 

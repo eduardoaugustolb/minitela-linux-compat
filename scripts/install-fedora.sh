@@ -114,6 +114,10 @@ run_root tar --no-same-owner --no-same-permissions --no-xattrs \
   -C "$stage_dir/usr/share/minitela" -cf - . |
   run_root tar --no-same-owner --no-same-permissions --no-xattrs -C /usr/share/minitela -xf -
 run_root chmod 0755 /usr/share/minitela/minitela /usr/share/minitela/reset_infos/reset_infos.sh
+run_root mv /usr/share/minitela/resources/MiniPanel-0.1.6.AppImage \
+  /usr/share/minitela/resources/MiniPanel-0.1.6.AppImage.vendor
+install_file "$repo_dir/scripts/minipanel-appimage-wrapper" \
+  /usr/share/minitela/resources/MiniPanel-0.1.6.AppImage 0755
 
 install_file "$stage_dir/etc/udev/hwdb.d/72-keyboard.hwdb" /etc/udev/hwdb.d/72-keyboard.hwdb 0644
 install_file "$stage_dir/etc/udev/rules.d/99-custom-input.rules" /etc/udev/rules.d/99-custom-input.rules 0644
