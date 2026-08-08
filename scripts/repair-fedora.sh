@@ -27,7 +27,7 @@ if [[ -e $vendor_appimage ]]; then
   [[ -x $vendor_appimage ]] || fail "managed vendor AppImage is not executable: $vendor_appimage"
 else
   [[ -x $appimage ]] || fail "vendor AppImage is not installed: $appimage"
-  strings -a "$appimage" | grep -q 'APPIMAGE_EXTRACT_AND_RUN' || fail 'installed GIF editor does not support AppImage extraction mode'
+  grep -aFq 'APPIMAGE_EXTRACT_AND_RUN' "$appimage" || fail 'installed GIF editor does not support AppImage extraction mode'
   run_root mv "$appimage" "$vendor_appimage"
 fi
 
