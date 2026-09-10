@@ -50,6 +50,26 @@ Este documento define o procedimento obrigatório para qualquer agente que insta
 
    O primeiro comando não deve retornar bibliotecas ausentes. O último deve retornar o SSID atual quando houver Wi-Fi conectado.
 
+## Instalação no Omarchy e Arch Linux
+
+Use somente o fluxo Arch em sistemas identificados por `ID=arch` ou
+`ID_LIKE=arch`, incluindo Omarchy:
+
+```bash
+./scripts/install-arch.sh ~/Downloads/minitela_1.0.20_amd64.deb
+```
+
+O instalador usa `pacman`, protege caminhos pertencentes a pacotes e grava um
+marcador de plataforma no manifesto. Para manutenção, não misture scripts:
+
+```bash
+sudo ./scripts/repair-arch.sh
+./scripts/uninstall-arch.sh
+```
+
+Em Omarchy/Hyprland, registre `DISPLAY` e `WAYLAND_DISPLAY`; o lançador usa o
+backend X11 quando XWayland disponibiliza `DISPLAY`.
+
 ## Auditoria de falhas
 
 Ao receber um relato de erro, colete primeiro evidências suficientes e reproduza de maneira não destrutiva.

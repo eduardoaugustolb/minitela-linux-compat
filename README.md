@@ -1,6 +1,6 @@
 # Minitela Linux Compatibility Kit
 
-Instalador comunitário para executar o **Minitela Positivo** em Fedora e outros sistemas RPM, sem alterar nem redistribuir o pacote original da Positivo.
+Instalador comunitário para executar o **Minitela Positivo** em Fedora e sistemas Arch (incluindo Omarchy), sem alterar nem redistribuir o pacote original da Positivo.
 
 ## O que este projeto faz
 
@@ -63,10 +63,38 @@ sudo ./scripts/cleanup-legacy-fedora.sh --apply ~/Downloads/minitela_1.0.20_amd6
 
 Depois execute o instalador normal novamente.
 
+## Instalação no Omarchy e Arch Linux
+
+O Omarchy é baseado em Arch Linux; use o instalador específico para Arch. Ele
+instala as dependências via `pacman`, preserva a proteção contra sobrescrever
+arquivos existentes ou pertencentes a pacotes e não requer SELinux.
+
+```bash
+git clone https://github.com/eduardoaugustolb/minitela-linux-compat.git
+cd minitela-linux-compat
+./scripts/install-arch.sh ~/Downloads/minitela_1.0.20_amd64.deb
+```
+
+Em sessões Hyprland/Wayland do Omarchy, o lançador usa XWayland quando
+`DISPLAY` estiver disponível, que é o caminho esperado para este aplicativo
+GTK3 legado. Abra-o pelo menu ou execute `/usr/local/bin/minitela-show`.
+
+Para reparar somente uma instalação criada pelo instalador Arch:
+
+```bash
+sudo ./scripts/repair-arch.sh
+```
+
 ## Desinstalação
 
 ```bash
 ./scripts/uninstall-fedora.sh
+```
+
+No Omarchy/Arch, use o desinstalador correspondente:
+
+```bash
+./scripts/uninstall-arch.sh
 ```
 
 A remoção exige o manifesto criado pelo instalador e recusa apagar arquivos
@@ -107,6 +135,8 @@ uma VM/snapshot Fedora com SELinux `Enforcing`.
 | Fedora GNOME (Wayland) | Testado | Instalação segura, reparo do `dpkg-query` e abertura pelo lançador verificados com SELinux enforcing. |
 | Fedora KDE Plasma (Wayland) | Esperado | Depende de XWayland estar instalado e ativo. |
 | Fedora GNOME/KDE (X11) | Esperado | Usa o backend GTK X11 diretamente. |
+| Omarchy (Hyprland/Wayland) | Esperado | Usa XWayland quando disponível; requer validação prática. |
+| Arch Linux e derivados | Esperado | Instalador via pacman, com proteção contra caminhos pertencentes a pacotes. |
 | Outras distros RPM | Planejado | A adaptação principal é portável; faltam instaladores específicos. |
 
 ## Limitações conhecidas

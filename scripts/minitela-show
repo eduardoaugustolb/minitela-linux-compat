@@ -1,18 +1,24 @@
 #!/bin/sh
 # Brings the Minitela GTK window to the foreground. The vendor app otherwise
 # starts as a background/tray process on its first launch.
+started_pid=
 if ! pgrep -x minitela >/dev/null 2>&1; then
   if [ -n "${DISPLAY:-}" ]; then
     GDK_BACKEND=x11 nohup /usr/share/minitela/minitela >/tmp/minitela.log 2>&1 &
   else
     GDK_BACKEND=wayland nohup /usr/share/minitela/minitela >/tmp/minitela.log 2>&1 &
   fi
+  started_pid=$!
 fi
 
 attempt=0
 while [ "$attempt" -lt 20 ]; do
   if [ -S /tmp/minitela_socket ] && printf 'show' | socat -u - UNIX-CONNECT:/tmp/minitela_socket >/dev/null 2>&1; then
     exit 0
+  fi
+  if [ -n "$started_pid" ] && ! kill -0 "$started_pid" 2>/dev/null; then
+    echo 'Minitela exited before creating its control socket; see /tmp/minitela.log.' >&2
+    exit 1
   fi
   attempt=$((attempt + 1))
   sleep 1
