@@ -1,154 +1,113 @@
 # Minitela Linux Compatibility Kit
 
-Instalador comunitário para executar o **Minitela Positivo** em Fedora e sistemas Arch (incluindo Omarchy), sem alterar nem redistribuir o pacote original da Positivo.
+> Execute o **Minitela Positivo** no Fedora, Arch Linux e Omarchy sem
+> redistribuir nem modificar o pacote original do fabricante.
 
-## O que este projeto faz
+O kit extrai localmente o `.deb` oficial, instala somente os arquivos
+necessários e fornece adaptações para as expectativas Debian do aplicativo.
 
-- Extrai localmente o `.deb` oficial fornecido pelo fabricante.
-- Instala as dependências Fedora necessárias.
-- Corrige as expectativas Debian do aplicativo (`dpkg-query` e `iwgetid`).
-- Cria um lançador que mostra a janela mesmo quando o app já está residente na bandeja.
-- Funciona em GNOME, KDE Plasma e sessões Wayland através do XWayland quando disponível.
+## Escolha sua distribuição
 
-## O que este projeto **não** inclui
+| Sistema | Instalador | Estado |
+| --- | --- | --- |
+| Fedora | `scripts/fedora/install.sh` | Testado em GNOME/Wayland com SELinux enforcing. |
+| Omarchy / Arch Linux | `scripts/arch/install.sh` | Esperado; usa XWayland no Hyprland quando disponível. |
+| Outros sistemas RPM | — | Planejado. |
 
-Este repositório não contém o executável, arquivos de recursos, firmware ou o pacote `.deb` da Positivo. Eles podem ser proprietários. Baixe o arquivo original por uma fonte autorizada e só publique uma versão modificada caso tenha permissão explícita do detentor dos direitos.
+## Instalação
 
-## Instalação no Fedora
-
-1. Baixe o arquivo original, por exemplo `minitela_1.0.20_amd64.deb`.
-2. Clone este repositório e execute:
+Primeiro, baixe o `.deb` original por uma fonte autorizada. Este repositório
+não contém executáveis, recursos, firmware ou qualquer arquivo proprietário
+da Positivo.
 
 ```bash
 git clone https://github.com/eduardoaugustolb/minitela-linux-compat.git
 cd minitela-linux-compat
-./scripts/install-fedora.sh ~/Downloads/minitela_1.0.20_amd64.deb
 ```
 
-3. Abra **Minitela** pelo menu de aplicativos, ou use:
+### Fedora
+
+```bash
+./scripts/fedora/install.sh ~/Downloads/minitela_1.0.20_amd64.deb
+```
+
+O instalador exige SELinux ativo (`Enforcing` ou `Permissive`) e valida os
+contextos dos diretórios de sistema antes e depois da instalação.
+
+### Omarchy e Arch Linux
+
+```bash
+./scripts/arch/install.sh ~/Downloads/minitela_1.0.20_amd64.deb
+```
+
+O instalador verifica se a distribuição é Arch ou derivada, instala as
+dependências por `pacman` — incluindo `gtkmm3`, necessário ao binário — e
+recusa sobrescrever caminhos já existentes ou pertencentes a pacotes.
+
+## Abrir o aplicativo
+
+Abra **Minitela** pelo menu ou execute:
 
 ```bash
 /usr/local/bin/minitela-show
 ```
 
-O instalador solicita `sudo` apenas para instalar dependências e arquivos de sistema.
+O lançador traz a janela para frente quando o processo já está residente na
+bandeja. Em Omarchy/Hyprland, utiliza o backend X11 via XWayland se `DISPLAY`
+estiver disponível. Se o processo encerrar antes de criar o socket interno, o
+lançador retorna imediatamente e aponta para `/tmp/minitela.log`.
 
-Se uma instalação gerenciada precisar da correção de compatibilidade do
-`dpkg-query` ou do editor de GIF em sistemas onde o FUSE não permite montar
-AppImages, aplique-a pelo reparo oficial antes de abrir o aplicativo:
+## Manutenção
 
-```bash
-sudo ./scripts/repair-fedora.sh
-```
+Use sempre o conjunto de scripts correspondente à instalação criada.
 
-### Segurança SELinux
-
-O instalador exige SELinux ativo (`Enforcing` ou `Permissive`) e confere os
-contextos de `/etc`, `/usr`, `/usr/lib` e `/usr/share` antes e depois da
-instalação. Ele usa uma área de estágio controlada em `/var/tmp`, instala uma
-lista explícita de arquivos e não copia metadados, ACLs ou xattrs do `.deb`
-para diretórios do sistema.
-
-Se o instalador informar que já existem arquivos de uma instalação anterior,
-**não force a cópia**. Primeiro restaure/remova essa instalação por um processo
-auditado. Em caso de suspeita de corrupção de labels, consulte a issue #2.
-
-Para arquivos udev e fontes deixados pela instalação antiga deste projeto, use
-somente a migração verificada abaixo. Ela confere checksum contra o `.deb` e
-recusa remover arquivos pertencentes a um RPM ou que tenham sido modificados:
-
-```bash
-sudo ./scripts/cleanup-legacy-fedora.sh --apply ~/Downloads/minitela_1.0.20_amd64.deb
-```
-
-Depois execute o instalador normal novamente.
-
-## Instalação no Omarchy e Arch Linux
-
-O Omarchy é baseado em Arch Linux; use o instalador específico para Arch. Ele
-instala as dependências via `pacman`, preserva a proteção contra sobrescrever
-arquivos existentes ou pertencentes a pacotes e não requer SELinux.
-
-```bash
-git clone https://github.com/eduardoaugustolb/minitela-linux-compat.git
-cd minitela-linux-compat
-./scripts/install-arch.sh ~/Downloads/minitela_1.0.20_amd64.deb
-```
-
-Em sessões Hyprland/Wayland do Omarchy, o lançador usa XWayland quando
-`DISPLAY` estiver disponível, que é o caminho esperado para este aplicativo
-GTK3 legado. Abra-o pelo menu ou execute `/usr/local/bin/minitela-show`.
-
-Para reparar somente uma instalação criada pelo instalador Arch:
-
-```bash
-sudo ./scripts/repair-arch.sh
-```
-
-## Desinstalação
-
-```bash
-./scripts/uninstall-fedora.sh
-```
-
-No Omarchy/Arch, use o desinstalador correspondente:
-
-```bash
-./scripts/uninstall-arch.sh
-```
-
-A remoção exige o manifesto criado pelo instalador e recusa apagar arquivos
-não rastreados. Isso evita que uma desinstalação apague arquivos do Fedora ou
-de outra aplicação.
-
-## Reparação de uma instalação gerenciada
-
-Para aplicar correções de compatibilidade a uma instalação criada por este
-projeto, use o fluxo oficial — não copie arquivos para `/usr/local` à mão:
-
-```bash
-sudo ./scripts/repair-fedora.sh
-```
-
-O reparo só altera arquivos registrados no manifesto da instalação e valida o
-resultado antes de concluir.
-
-O reparo também troca apenas o lançador do AppImage do editor de GIF por um
-wrapper gerenciado. O AppImage original é preservado dentro de
-`/usr/share/minitela/resources/` e executado com o modo oficial de extração,
-sem exigir montagem FUSE.
-
-## Validação dos scripts
-
-```bash
-./tests/test-installer-safety.sh
-```
-
-O teste estático impede o retorno de cópias arquivadas para `/etc` e `/usr` e
-verifica as barreiras básicas de SELinux. A validação completa deve ocorrer em
-uma VM/snapshot Fedora com SELinux `Enforcing`.
-
-## Estado de compatibilidade
-
-| Ambiente | Estado | Observação |
+| Ação | Fedora | Arch / Omarchy |
 | --- | --- | --- |
-| Fedora GNOME (Wayland) | Testado | Instalação segura, reparo do `dpkg-query` e abertura pelo lançador verificados com SELinux enforcing. |
-| Fedora KDE Plasma (Wayland) | Esperado | Depende de XWayland estar instalado e ativo. |
-| Fedora GNOME/KDE (X11) | Esperado | Usa o backend GTK X11 diretamente. |
-| Omarchy (Hyprland/Wayland) | Esperado | Usa XWayland quando disponível; requer validação prática. |
-| Arch Linux e derivados | Esperado | Instalador via pacman, com proteção contra caminhos pertencentes a pacotes. |
-| Outras distros RPM | Planejado | A adaptação principal é portável; faltam instaladores específicos. |
+| Reparar wrappers e dependências | `sudo ./scripts/fedora/repair.sh` | `sudo ./scripts/arch/repair.sh` |
+| Desinstalar | `./scripts/fedora/uninstall.sh` | `./scripts/arch/uninstall.sh` |
+| Limpar arquivos de instalação Fedora antiga | `sudo ./scripts/fedora/cleanup-legacy.sh --apply pacote.deb` | — |
+
+Os instaladores mantêm um manifesto de propriedade. A desinstalação recusa
+remover itens não rastreados e os fluxos Arch/Fedora não podem operar sobre a
+instalação um do outro.
+
+## Estrutura do projeto
+
+```text
+scripts/
+├── arch/       # instalação, reparo e remoção para Arch/Omarchy
+├── common/     # lançador e shims reutilizados por todas as distros
+└── fedora/     # instalação, reparo, remoção e migração segura Fedora
+tests/
+└── static/     # validações de sintaxe e barreiras de segurança
+```
+
+## Validar alterações
+
+```bash
+./tests/static/installer-safety.sh
+```
+
+O teste estático valida sintaxe, manifestos, proteção de caminhos, dependências
+Arch e as barreiras SELinux do instalador Fedora. Faça a validação completa em
+uma VM ou snapshot, especialmente antes de mudanças no fluxo de instalação.
 
 ## Limitações conhecidas
 
-- A transferência de GIFs pode apresentar corrupção ocasional. Ainda não há correção; não use para conteúdos importantes sem testar no dispositivo.
-- O aplicativo é GTK3 e usa APIs de bandeja antigas. A integração visual pode variar entre ambientes.
-- O aviso de versão da `libcurl` é emitido pelo binário do fabricante e, no cenário testado, não impede a operação.
+- Transferências de GIF podem apresentar corrupção ocasional; teste antes de
+  usar conteúdos importantes.
+- O aplicativo usa GTK3 e APIs de bandeja antigas, então a integração visual
+  depende do ambiente gráfico.
+- O aviso de versão da `libcurl` vem do binário do fabricante e, no cenário
+  testado, não impede a operação.
 
-## Como contribuir
+## Contribuir
 
-Relate a distro, versão, ambiente gráfico, se a sessão é Wayland/X11 e os logs relevantes. Pull requests são bem-vindos para novos instaladores e correções que não redistribuam conteúdo proprietário.
+Inclua distribuição, versão, ambiente gráfico, tipo de sessão (Wayland/X11) e
+logs relevantes ao relatar um problema. Não publique o `.deb` nem outros
+artefatos proprietários da Positivo.
 
 ## Licença
 
-Os scripts e a documentação deste repositório são licenciados sob MIT. O software da Positivo continua sujeito à licença do seu fabricante.
+Os scripts e a documentação usam a licença MIT. O software Minitela continua
+sujeito à licença do fabricante.

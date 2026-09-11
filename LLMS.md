@@ -21,7 +21,7 @@ Este documento define o procedimento obrigatório para qualquer agente que insta
 2. No clone deste repositório, execute o instalador:
 
    ```bash
-   ./scripts/install-fedora.sh ~/Downloads/minitela_1.0.20_amd64.deb
+   ./scripts/fedora/install.sh ~/Downloads/minitela_1.0.20_amd64.deb
    ```
 
 3. Abra a interface pelo menu **Minitela** ou pelo lançador compatível:
@@ -37,7 +37,7 @@ Este documento define o procedimento obrigatório para qualquer agente que insta
    o teste:
 
    ```bash
-   sudo ./scripts/repair-fedora.sh
+   sudo ./scripts/fedora/repair.sh
    ```
 
 4. Confirme o básico:
@@ -56,15 +56,15 @@ Use somente o fluxo Arch em sistemas identificados por `ID=arch` ou
 `ID_LIKE=arch`, incluindo Omarchy:
 
 ```bash
-./scripts/install-arch.sh ~/Downloads/minitela_1.0.20_amd64.deb
+./scripts/arch/install.sh ~/Downloads/minitela_1.0.20_amd64.deb
 ```
 
 O instalador usa `pacman`, protege caminhos pertencentes a pacotes e grava um
 marcador de plataforma no manifesto. Para manutenção, não misture scripts:
 
 ```bash
-sudo ./scripts/repair-arch.sh
-./scripts/uninstall-arch.sh
+sudo ./scripts/arch/repair.sh
+./scripts/arch/uninstall.sh
 ```
 
 Em Omarchy/Hyprland, registre `DISPLAY` e `WAYLAND_DISPLAY`; o lançador usa o
@@ -177,8 +177,8 @@ Modelo:
 2. Valide a sintaxe e a instalação:
 
    ```bash
-   bash -n scripts/install-fedora.sh scripts/uninstall-fedora.sh
-   sh -n scripts/minitela-show scripts/dpkg-query scripts/iwgetid
+   bash -n scripts/fedora/install.sh scripts/fedora/uninstall.sh
+   sh -n scripts/common/minitela-show scripts/common/dpkg-query scripts/common/iwgetid
    ```
 
 3. Teste novamente o caso descrito na issue.

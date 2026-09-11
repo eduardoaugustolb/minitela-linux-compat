@@ -3,7 +3,7 @@ set -euo pipefail
 
 readonly manifest_path=/var/lib/minitela-linux-compat/manifest
 readonly platform_path=/var/lib/minitela-linux-compat/platform
-repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 
 if [[ $EUID -eq 0 ]]; then run_root() { "$@"; }; else run_root() { sudo "$@"; }; fi
 fail() { echo "Error: $*" >&2; exit 1; }
@@ -27,8 +27,8 @@ else
   run_root mv "$appimage" "$vendor_appimage"
 fi
 
-run_root install -m 0755 "$repo_dir/scripts/dpkg-query" /usr/local/bin/dpkg-query
-run_root install -m 0755 "$repo_dir/scripts/minipanel-appimage-wrapper" "$appimage"
+run_root install -m 0755 "$repo_dir/scripts/common/dpkg-query" /usr/local/bin/dpkg-query
+run_root install -m 0755 "$repo_dir/scripts/common/minipanel-appimage-wrapper" "$appimage"
 if /usr/local/bin/dpkg-query --showformat='${Version}' --show minitela | grep -qx '1.0.20'; then
   echo 'Minitela compatibility repair completed (including FUSE-free GIF editor launcher).'
 else

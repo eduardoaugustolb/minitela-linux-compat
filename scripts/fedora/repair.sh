@@ -4,7 +4,7 @@ set -euo pipefail
 readonly state_dir=/var/lib/minitela-linux-compat
 readonly manifest_path="$state_dir/manifest"
 
-repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 
 if [[ $EUID -eq 0 ]]; then
   run_root() { "$@"; }
@@ -33,9 +33,9 @@ fi
 
 # Update only a path recorded as owned by this installation. This avoids an
 # ad-hoc system edit and gives users a repeatable repair workflow.
-run_root install -m 0755 "$repo_dir/scripts/dpkg-query" /usr/local/bin/dpkg-query
+run_root install -m 0755 "$repo_dir/scripts/common/dpkg-query" /usr/local/bin/dpkg-query
 run_root restorecon -v /usr/local/bin/dpkg-query
-run_root install -m 0755 "$repo_dir/scripts/minipanel-appimage-wrapper" "$appimage"
+run_root install -m 0755 "$repo_dir/scripts/common/minipanel-appimage-wrapper" "$appimage"
 run_root restorecon -v "$appimage" "$vendor_appimage"
 
 if /usr/local/bin/dpkg-query --showformat='${Version}' --show minitela | grep -qx '1.0.20'; then

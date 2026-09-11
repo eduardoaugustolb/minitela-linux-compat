@@ -67,4 +67,4 @@ for path in /etc /etc/udev /etc/udev/hwdb.d /etc/udev/rules.d; do
   [[ $actual == "$expected" ]] || fail "SELinux context mismatch after cleanup: $path"
 done
 
-echo 'Verified legacy cleanup completed. You can now run scripts/install-fedora.sh.'
+echo 'Verified legacy cleanup completed. You can now run scripts/fedora/install.sh.'
