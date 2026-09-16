@@ -18,7 +18,7 @@ fail() {
 }
 
 [[ -f $manifest_path ]] || fail "no managed Minitela installation manifest exists at $manifest_path"
-grep -qx '/usr/local/bin/dpkg-query' "$manifest_path" || fail 'installed manifest does not own the dpkg-query compatibility shim'
+run_root grep -qx '/usr/local/bin/dpkg-query' "$manifest_path" || fail 'installed manifest does not own the dpkg-query compatibility shim'
 [[ -x /usr/share/minitela/minitela ]] || fail 'Minitela executable is not installed'
 
 appimage=/usr/share/minitela/resources/MiniPanel-0.1.6.AppImage
@@ -30,6 +30,20 @@ else
   grep -aFq 'APPIMAGE_EXTRACT_AND_RUN' "$appimage" || fail 'installed GIF editor does not support AppImage extraction mode'
   run_root mv "$appimage" "$vendor_appimage"
 fi
+
+# The vendor registers the tray icon by name and never publishes a pixmap,
+# so the icon must resolve through an installed icon theme. The vendor file
+# is ICO data with a .png name, which PNG loaders reject, so decode it.
+if [[ -f /usr/share/minitela/resources/trayIcon.png ]]; then
+  icon_path=/usr/share/icons/hicolor/256x256/apps/trayIcon.png
+  run_root dnf install -y ImageMagick
+  run_root install -d -m 0755 "$(dirname "$icon_path")"
+  run_root magick "ICO:/usr/share/minitela/resources/trayIcon.png[0]" -background none "PNG32:$icon_path"
+  run_root chmod 0644 "$icon_path"
+  run_root restorecon -v "$icon_path"
+  run_root grep -qx "$icon_path" "$manifest_path" || run_root sh -c "printf '%s\n' \"$icon_path\" >> \"$manifest_path\""
+fi
+run_root gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # Update only a path recorded as owned by this installation. This avoids an
 # ad-hoc system edit and gives users a repeatable repair workflow.

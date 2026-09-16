@@ -39,6 +39,7 @@ declare -A allowed=(
   [/usr/share/glib-2.0/schemas/org.policorp.minitela.gschema.xml]=file
   [/usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf]=file
   [/usr/share/fonts/Montserrat-VariableFont_wght.ttf]=file
+  [/usr/share/icons/hicolor/256x256/apps/trayIcon.png]=file
   [/usr/local/bin/minitela-show]=file
   [/usr/local/bin/dpkg-query]=file
   [/usr/sbin/iwgetid]=file
@@ -58,6 +59,7 @@ done <"$manifest_path"
 run_root rm -f -- "$manifest_path"
 run_root rmdir "$state_dir" 2>/dev/null || true
 run_root glib-compile-schemas /usr/share/glib-2.0/schemas
+run_root gtk-update-icon-cache -f /usr/share/icons/hicolor
 run_root systemd-hwdb update
 run_root udevadm control --reload
 run_root udevadm trigger

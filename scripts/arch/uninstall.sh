@@ -27,6 +27,7 @@ declare -A allowed=(
   [/usr/share/glib-2.0/schemas/org.policorp.minitela.gschema.xml]=file
   [/usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf]=file
   [/usr/share/fonts/Montserrat-VariableFont_wght.ttf]=file
+  [/usr/share/icons/hicolor/256x256/apps/trayIcon.png]=file
   [/usr/local/bin/minitela-show]=file
   [/usr/local/bin/dpkg-query]=file
   [/usr/sbin/iwgetid]=file
@@ -42,7 +43,24 @@ done <"$manifest_path"
 run_root rm -f -- "$manifest_path"
 run_root rm -f -- "$platform_path"
 run_root rmdir "$state_dir" 2>/dev/null || true
+
+# Remove the Omarchy Yaru-gray bridge, but only if this installation created
+# it: the marker comment proves ownership, and rmdir only succeeds when the
+# user added nothing else to the directory.
+shim_user=${SUDO_USER:-$(id -un)}
+if [[ $shim_user != root ]]; then
+  shim_home=$(getent passwd "$shim_user" | cut -d: -f6 || true)
+  shim_dir=${shim_home:+$shim_home/.local/share/icons/Yaru-gray}
+  shim_index=${shim_dir:+$shim_dir/index.theme}
+  if [[ -n ${shim_index:-} && -f $shim_index ]] &&
+     run_root grep -qx '# managed by minitela-linux-compat: Yaru-gray compatibility bridge' "$shim_index"; then
+    run_root rm -f -- "$shim_index"
+    run_root rmdir -- "$shim_dir" 2>/dev/null || true
+  fi
+fi
+
 run_root glib-compile-schemas /usr/share/glib-2.0/schemas
+run_root gtk-update-icon-cache -f /usr/share/icons/hicolor
 run_root systemd-hwdb update
 run_root udevadm control --reload
 run_root udevadm trigger

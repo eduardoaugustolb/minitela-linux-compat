@@ -57,7 +57,7 @@ for path in /etc /usr /usr/lib /usr/share; do
   assert_context "$path"
 done
 
-run_root dnf install -y binutils libayatana-appindicator-gtk3 policycoreutils socat
+run_root dnf install -y binutils gtk3 ImageMagick libayatana-appindicator-gtk3 policycoreutils socat
 [[ ! -e $manifest_path ]] || fail "an existing Minitela compatibility installation is recorded at $manifest_path; uninstall it first"
 
 # Never honour caller-controlled TMPDIR: its context may be a user label.
@@ -99,6 +99,7 @@ declare -a targets=(
   /usr/share/glib-2.0/schemas/org.policorp.minitela.gschema.xml
   /usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf
   /usr/share/fonts/Montserrat-VariableFont_wght.ttf
+  /usr/share/icons/hicolor/256x256/apps/trayIcon.png
   /usr/local/bin/minitela-show
   /usr/local/bin/dpkg-query
   /usr/sbin/iwgetid
@@ -127,6 +128,14 @@ install_file "$stage_dir/lib/systemd/system-sleep/minitela-controller" /usr/lib/
 install_file "$stage_dir/usr/share/glib-2.0/schemas/org.policorp.minitela.gschema.xml" /usr/share/glib-2.0/schemas/org.policorp.minitela.gschema.xml 0644
 install_file "$stage_dir/usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf" /usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf 0644
 install_file "$stage_dir/usr/share/fonts/Montserrat-VariableFont_wght.ttf" /usr/share/fonts/Montserrat-VariableFont_wght.ttf 0644
+# The vendor tray icon is ICO data with a .png name, which icon-theme PNG
+# loaders reject; decode it to a real PNG before registering it in hicolor.
+tray_icon_src=/usr/share/minitela/resources/trayIcon.png
+tray_icon_dest=/usr/share/icons/hicolor/256x256/apps/trayIcon.png
+[[ -f $tray_icon_src ]] || fail 'package is missing required file: resources/trayIcon.png'
+run_root install -d -m 0755 "$(dirname "$tray_icon_dest")"
+run_root magick "ICO:$tray_icon_src[0]" -background none "PNG32:$tray_icon_dest"
+run_root chmod 0644 "$tray_icon_dest"
 
 install_file "$repo_dir/scripts/common/minitela-show" /usr/local/bin/minitela-show 0755
 install_file "$repo_dir/scripts/common/dpkg-query" /usr/local/bin/dpkg-query 0755
@@ -159,8 +168,10 @@ run_root restorecon -v \
   /usr/share/glib-2.0/schemas/org.policorp.minitela.gschema.xml \
   /usr/share/fonts/Inconsolata-VariableFont_wdth,wght.ttf \
   /usr/share/fonts/Montserrat-VariableFont_wght.ttf \
+  /usr/share/icons/hicolor/256x256/apps/trayIcon.png \
   /usr/local/bin/minitela-show /usr/local/bin/dpkg-query /usr/sbin/iwgetid
 run_root glib-compile-schemas /usr/share/glib-2.0/schemas
+run_root gtk-update-icon-cache -f /usr/share/icons/hicolor
 run_root systemd-hwdb update
 run_root udevadm control --reload
 run_root udevadm trigger
