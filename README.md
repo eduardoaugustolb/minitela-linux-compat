@@ -16,9 +16,15 @@ necessários e fornece adaptações para as expectativas Debian do aplicativo.
 
 ## Instalação
 
-Primeiro, baixe o `.deb` original por uma fonte autorizada. Este repositório
-não contém executáveis, recursos, firmware ou qualquer arquivo proprietário
-da Positivo.
+Primeiro, baixe o `.deb` original por uma fonte autorizada, por exemplo o
+repositório do fabricante:
+
+```text
+http://www.policorp.com.br/repositorio/d13/policorp/minitela_1.0.20_amd64.deb
+```
+
+Este repositório não contém executáveis, recursos, firmware ou qualquer
+arquivo proprietário da Positivo.
 
 ```bash
 git clone https://github.com/eduardoaugustolb/minitela-linux-compat.git
@@ -100,6 +106,10 @@ uma VM ou snapshot, especialmente antes de mudanças no fluxo de instalação.
   depende do ambiente gráfico.
 - O aviso de versão da `libcurl` vem do binário do fabricante e, no cenário
   testado, não impede a operação.
+- Existe uma alternativa não oficial, o projeto
+  [SideCar](https://github.com/FreyreCorona/SideCar), que reimplementa o
+  runtime sem o `.deb` do fabricante. Não é mantido nem validado por este
+  repositório.
 
 ## Contribuir
 
